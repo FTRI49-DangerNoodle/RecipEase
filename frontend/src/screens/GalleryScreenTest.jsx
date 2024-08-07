@@ -8,7 +8,7 @@ import {
   Pagination,
 } from '@mui/material';
 
-const recipes = require('../assets/data/recipes'); // Ensure this path correctly points to your recipes data file
+import recipes from ('../assets/data/recipes'); // Ensure this path correctly points to your recipes data file
 
 const GalleryScreen = () => {
   const [currentPage, setCurrentPage] = useState(1);
