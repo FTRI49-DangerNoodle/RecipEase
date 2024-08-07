@@ -6,6 +6,7 @@ const LoginScreen = () => {
   return (
     <div>
       <div>
+        <Header />
         <LoginBox />
       </div>
     </div>
