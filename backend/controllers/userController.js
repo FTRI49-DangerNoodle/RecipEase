@@ -11,28 +11,28 @@ const UserController = {
     try {
       const { firstName, lastName, email, password } = req.body;
 
-      const registeredUser = await User.create({
+      let user = await User.create({
         firstName,
         lastName,
         email,
         password,
       });
 
-      // Remove the password from the response
-      const networkData = {
-        _id: registeredUser._id,
-        firstName: registeredUser.firstName,
-        lastName: registeredUser.lastName,
-        email: registeredUser.email,
-      };
-      const token = UserController.generateToken(registeredUser._id);
+      const token = UserController.generateToken(user._id);
 
       res.cookie('token', token, {
-        httpOnly: true, 
+        httpOnly: true,
         maxAge: 2 * 60 * 60 * 1000, // <----- 2 hours
       });
 
-      res.status(201).json(networkData);
+      // convert to plain old javascript object, rather than mongoose object to delete properties
+      user = user.toObject();
+      delete user.password;
+      delete user.createdAt;
+      delete user.updatedAt;
+      delete user.__v;
+
+      res.status(201).json(user);
     } catch (error) {
       if (error.code === 11000) {
         res.status(409).send('Email already in use');
@@ -45,26 +45,26 @@ const UserController = {
   async login(req, res) {
     try {
       const { email, password } = req.body;
-      const user = await User.findOne({ email });
+      let user = await User.findOne({ email }).populate('favoriteRecipes');
       if (!user || !user.matchPassword(password)) {
         return res.status(401).send('Invalid email or password');
       }
 
-      const token =UserController.generateToken(user._id);
+      const token = UserController.generateToken(user._id);
 
       res.cookie('token', token, {
         httpOnly: true,
         maxAge: 2 * 60 * 60 * 1000, // <----- 2 hours
       });
 
-      const networkData = {
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      };
+      // convert to plain old javascript object, rather than mongoose object to delete properties
+      user = user.toObject();
+      delete user.password;
+      delete user.createdAt;
+      delete user.updatedAt;
+      delete user.__v;
 
-      res.status(200).json(networkData);
+      res.status(200).json(user);
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -86,10 +86,10 @@ const UserController = {
 
   // Update favorite recipes
   async updateFavorites(req, res) {
-    console.log("hit")
+    console.log('hit');
     const id = req.userId;
     try {
-      const {recipeId } = req.body;
+      const { recipeId } = req.body;
 
       const user = await User.findById(id);
       const index = user.favoriteRecipes.indexOf(recipeId);
