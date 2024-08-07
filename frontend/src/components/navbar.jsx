@@ -12,7 +12,10 @@ import Button from '@mui/material/Button';
 import { Link } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Menu, MenuItem, Slide, useScrollTrigger } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -59,6 +62,51 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function SearchAppBar() {
   // state for component anchor for AppBar drop-down menu
   const [anchorEl, setAnchorEl] = useState(null);
+  // state for search term
+  const [searchTerm, setSearchTerm] = useState('');
+  // state to populate options for Autcomplete searchbox in AppBar
+  const [options, setOptions] = useState([]);
+
+  const [recipeCache, setRecipeCache] = useState([]);
+
+  // function to populate options array with recipes for Autocomplete in AppBar search
+  const fetchRecipes = async () => {
+    const fetchData = await fetch(
+      'http://www.localhost:3000/api/recipes/names-ids'
+    );
+    const fetchedRecipes = await fetchData.json();
+    fetchedRecipes.map((arr, idx) => {
+      setOptions([...options, arr.name]);
+      setRecipeCache([...recipeCache, arr]);
+    });
+    console.log('opt', options);
+    console.log('rc', recipeCache);
+  };
+
+  // useEffect to populate recipes on initial page render
+  useEffect(() => {
+    if (!options) fetchRecipes();
+  }, []);
+
+  // test search options array
+  // const allOptions = [
+  //   '66b3d41d81883b581167fc6c',
+  //   '66b3d41d81883b581167fc6d',
+  //   '66b3d41d81883b581167fc6e',
+  //   '66b3d41d81883b581167fc6f',
+  // ];
+
+  // useNavigate function to route search request to paginated data for chosen recipe
+  const navigate = useNavigate();
+  // function to handle search logic after input submission
+  const handleSubmit = async (recipe) => {
+    navigate(`api/recipes/${recipe.id}`);
+  };
+
+  // update state in real-time based on search box input
+  useEffect(() => {
+    if (searchTerm) console.log(searchTerm);
+  }, [searchTerm]);
 
   // function to handle menu selection from AppBar drop-down menu
   const handleMenu = (event) => {
@@ -158,16 +206,22 @@ export default function SearchAppBar() {
                     </MenuItem>
                   </Link>
                 </Menu>
-                <Search>
-                  <SearchIconWrapper>
-                    <SearchIcon />
-                  </SearchIconWrapper>
-                  <StyledInputBase
-                    placeholder="Search Recipes..."
-                    inputProps={{ 'aria-label': 'search' }}
-                    // onChange={(e) => handleState(e)}
-                  />
-                </Search>
+                <SearchIcon />
+                <Autocomplete
+                  freesolo="true"
+                  inputValue={searchTerm}
+                  onInputChange={(event, newInputValue) => {
+                    setSearchTerm(newInputValue);
+                  }}
+                  onSubmit={() => handleSubmit(searchTerm)}
+                  options={options}
+                  disablePortal
+                  id="recipe-search"
+                  sx={{ width: 300 }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Recipe Search" />
+                  )}
+                />
                 <Button href="/login" color="inherit">
                   {loginButton}
                 </Button>
