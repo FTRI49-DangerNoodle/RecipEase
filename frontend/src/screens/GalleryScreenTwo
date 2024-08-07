@@ -5,8 +5,8 @@ import {
   ListItem,
   ListItemText,
   Typography,
-  Container,
   Button,
+  CircularProgress,
 } from '@mui/material';
 
 const GalleryScreen = () => {
@@ -17,43 +17,39 @@ const GalleryScreen = () => {
   const recipesPerPage = 10;
 
   useEffect(() => {
-    setLoading(true);
-    fetch()
-      //call here
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchRecipes = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(); //fetch
+        const data = await response.json();
         setRecipes(data);
-        setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error fetching data:', error);
-        setLoading(false);
-      });
+      }
+      setLoading(false);
+    };
+
+    fetchRecipes();
   }, [pageNumber]);
 
   return (
-    <Container maxWidth='sm' style={{ marginTop: '20px' }}>
-      <Typography variant='h4' style={{ marginBottom: '20px' }} color='primary'>
-        Recipe Gallery
-      </Typography>
+    <Container>
+      <Typography variant='h4'>Recipe Gallery</Typography>
       {loading ? (
-        <div>Loading...</div>
+        <CircularProgress />
       ) : (
         <List>
           {recipes.map((recipe) => (
-            <ListItem key={recipe._id} divider>
+            <ListItem key={recipe._id}>
               <ListItemText primary={recipe.name} />
             </ListItem>
           ))}
         </List>
       )}
-      <Button
-        onClick={() => navigate(`/gallery/${parseInt(pageNumber) - 1}`)}
-        disabled={pageNumber <= 1}
-      >
+      <Button onClick={() => navigate(`/api/recipes/${recipe.page - 1}`)}>
         Previous
       </Button>
-      <Button onClick={() => navigate(`/gallery/${parseInt(pageNumber) + 1}`)}>
+      <Button onClick={() => navigate(`/api/recipes/${recipe.page + 1}`)}>
         Next
       </Button>
     </Container>
