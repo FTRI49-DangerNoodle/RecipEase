@@ -56,6 +56,7 @@ app.use(express.static(path.resolve(__dirname, '../dist/index.html')));
  */
 // Get all recipes and insert into DB
 // http: //localhost:3000/
+app.post('/register', userController.register);
 
 // obtain all recipes and insert into collection: recipes inside Database: recipease
 app.get('/', recipesController.getAllRecipes, (req, res) => {
