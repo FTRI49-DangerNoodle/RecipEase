@@ -36,7 +36,7 @@ const HomeScreen = () => {
   ];
 
   return (
-    <Stack alignItems="center">
+    <Stack alignItems="center" sx={{ mt: 5 }}>
       <Typography variant="h2">Welcome to RecipEase!</Typography>
       <Carousel images={images} />
     </Stack>

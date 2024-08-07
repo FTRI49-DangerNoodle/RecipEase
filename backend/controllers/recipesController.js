@@ -1,7 +1,6 @@
 const Recipe = require("../models/recipesData.js");
 const axios = require("axios");
 const transformDataForDB = require("../DB_insert_algorithm/transformDataForDB.js");
-
 exports.insertRecipes = async (req, res, next) => {
   try {
     const letters = "abcdefghijklmnopqrstuvwxyz".split("");
@@ -62,33 +61,108 @@ exports.getRecipeById = async (req, res, next) => {
       log: err,
     });
   }
+
 };
-exports.autoCompleteByQueryId = async (req, res, next) => {
-  const { query } = req.query;
+
+exports.getAllRecipeNamesAndIds = async (req, res, next) => {
   try {
-    const recipes = await Recipe.find({ name: new RegExp("^" + query, "i") })
-      .select("name")
-      .limit(10);
+    const recipes = await Recipe.find({}).select("name _id");
     res.status(200).json(recipes);
   } catch (err) {
     return next({
-      message: "error in getAutocompleteSuggestions: " + err,
+      message: "error in getAllRecipeNamesAndIds: " + err,
       log: err,
     });
   }
 };
 
-exports.autoCompleteByName = async (req, res, next) => {
-  const { name } = req.body;
+exports.getRecipesWithPagination = async (req, res, next) => {
+  const { page = 1 } = req.query; 
+  const pageNumber = parseInt(page);
+  
   try {
-    const recipes = await Recipe.find({ name: new RegExp("^" + name, "i") })
-      .select("name")
+    const totalItems = await Recipe.countDocuments({});
+    const totalPages = Math.ceil(totalItems / 10);
+
+    if (pageNumber > totalPages) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
+    const recipes = await Recipe.find({})
+      .select("name image")
+      .skip((pageNumber - 1) * 10)
       .limit(10);
-    res.status(200).json(recipes);
+
+    res.status(200).json({
+      page: pageNumber,
+      totalPages,
+      totalItems,
+      recipes,
+    });
   } catch (err) {
     return next({
-      message: "error in getAutocompleteSuggestions: " + err,
+      message: "error in getRecipesWithPagination: " + err,
       log: err,
     });
   }
 };
+
+exports.getRecipesWithPaginationId = async (req, res, next) => {
+  const { id = 1 } = req.params; 
+  const pageNumber = parseInt(id);
+  
+  try {
+    const totalItems = await Recipe.countDocuments({});
+    const totalPages = Math.ceil(totalItems / 10);
+
+    if (pageNumber > totalPages) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
+    const recipes = await Recipe.find({})
+      .select("name image")
+      .skip((pageNumber - 1) *10)
+      .limit(10);
+
+    res.status(200).json({
+      page: pageNumber,
+      totalPages,
+      totalItems,
+      recipes,
+    });
+  } catch (err) {
+    return next({
+      message: "error in getRecipesWithPagination: " + err,
+      log: err,
+    });
+  }
+};
+// exports.autoCompleteByQueryId = async (req, res, next) => {
+//   const { query } = req.query;
+//   try {
+//     const recipes = await Recipe.find({ name: new RegExp("^" + query, "i") })
+//       .select("name")
+//       .limit(10);
+//     res.status(200).json(recipes);
+//   } catch (err) {
+//     return next({
+//       message: "error in getAutocompleteSuggestions: " + err,
+//       log: err,
+//     });
+//   }
+// };
+
+// exports.autoCompleteByName = async (req, res, next) => {
+//   const { name } = req.body;
+//   try {
+//     const recipes = await Recipe.find({ name: new RegExp("^" + name, "i") })
+//       .select("name")
+//       .limit(10);
+//     res.status(200).json(recipes);
+//   } catch (err) {
+//     return next({
+//       message: "error in getAutocompleteSuggestions: " + err,
+//       log: err,
+//     });
+//   }
+// };

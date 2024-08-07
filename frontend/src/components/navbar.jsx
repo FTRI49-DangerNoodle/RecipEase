@@ -172,37 +172,21 @@ export default function SearchAppBar() {
                 >
                   RecipEase
                 </Typography>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
-                >
-                  <Link
-                    href="/"
-                    style={{ color: 'white', textDiscoloration: 'none' }}
-                  >
-                    <MenuItem oncClick={handleClose}>Home</MenuItem>
+                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+                  <Link href="/" style={{ color: 'white', textDiscoloration: 'none' }}>
+                    <MenuItem onClick={handleClose}>Home</MenuItem>
                   </Link>
-                  <Link
-                    href="/past"
-                    style={{ color: 'white', textDiscoloration: 'none' }}
-                  >
-                    <MenuItem onSelect="/past" onClick={handleClose}>
+                  <Link href="/past" style={{ color: 'white', textDiscoloration: 'none' }}>
+                    <MenuItem href="/past" onClick={handleClose}>
                       Past Recipes
                     </MenuItem>
                   </Link>
-                  <Link
-                    href="/favorite"
-                    style={{ color: 'white', textDiscoloration: 'none' }}
-                  >
+                  <Link href="/favorite" style={{ color: 'white', textDiscoloration: 'none' }}>
                     <MenuItem href="/favorite" onClick={handleClose}>
                       Favorite Recipes
                     </MenuItem>
                   </Link>
-                  <Link
-                    href="/list"
-                    style={{ color: 'white', textDiscoloration: 'none' }}
-                  >
+                  <Link href="/list" style={{ color: 'white', textDiscoloration: 'none' }}>
                     <MenuItem href="/list" onClick={handleClose}>
                       List
                     </MenuItem>

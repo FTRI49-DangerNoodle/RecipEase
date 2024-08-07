@@ -49,6 +49,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
     }),
     searchRecipeById: builder.query({
       query: (id) => ({ url: `${RECIPES_URL}/${id}` }),
+      providesTags: (_result, _err, id) => [{ type: 'Recipe', id }],
     }),
   }),
 });
