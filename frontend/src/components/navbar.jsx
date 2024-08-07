@@ -12,7 +12,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Menu, MenuItem, Slide, useScrollTrigger } from '@mui/material';
 import { useState } from 'react';
-// test change
+
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,

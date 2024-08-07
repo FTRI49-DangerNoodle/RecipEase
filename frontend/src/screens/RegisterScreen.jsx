@@ -16,6 +16,11 @@ import { useBoolean } from '../hooks/use-boolean';
 import { Iconify } from '../components/iconify';
 import { Form, Field } from '../components/hook-form';
 
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useRegisterMutation } from '../slices/usersApiSlice';
+import { setUser } from '../slices/authSlice';
+
 export const SignUpSchema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required!' }),
   lastName: zod.string().min(1, { message: 'Last name is required!' }),
@@ -33,8 +38,10 @@ export const SignUpSchema = zod.object({
 
 function RegisterScreen() {
   const password = useBoolean();
-
   const [errorMsg, setErrorMsg] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [register] = useRegisterMutation();
 
   const defaultValues = {
     firstName: '',
@@ -56,6 +63,13 @@ function RegisterScreen() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       console.log(data);
+
+      const res = await register(data).unwrap();
+
+      console.log(res);
+
+      dispatch(setUser({ ...res }));
+      navigate('/');
     } catch (error) {
       console.error(error);
       setErrorMsg(error instanceof Error ? error.message : error);

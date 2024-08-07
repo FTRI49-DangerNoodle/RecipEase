@@ -1,9 +1,7 @@
 import { apiSlice } from './apiSlice';
-import { setCart } from '../slices/cartSlice';
 
 const USERS_URL = '/api/users';
-const CARTS_URL = '/api/carts';
-const PRODUCTS_URL = '/api/products';
+const RECIPES_URL = '/api/recipes';
 
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -14,60 +12,53 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    logout: builder.mutation({
-      query: () => ({
-        url: `${USERS_URL}/logout`,
-        method: 'POST',
-      }),
-    }),
     register: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}`,
+        url: `${USERS_URL}/register`,
         method: 'POST',
         body: data,
       }),
     }),
-    updateUser: builder.mutation({
+    addFavorite: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/profile`,
-        method: 'PUT',
+        url: `${USERS_URL}/favorite`,
+        method: 'PATCH',
         body: data,
       }),
     }),
-    deleteUser: builder.mutation({
+    searchRecipeByName: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/profile`,
-        method: 'DELETE',
+        url: `${RECIPES_URL}/search`,
+        method: 'POST',
         body: data,
       }),
     }),
-    getCart: builder.query({
-      query: () => `${CARTS_URL}`,
-      // eslint-disable-next-line no-shadow-restricted-names
-      async onQueryStarted(undefined, { dispatch, queryFulfilled }) {
-        // `onStart` side-effect
-        try {
-          const { data } = await queryFulfilled;
-          // `onSuccess` side-effect
-          dispatch(setCart(data));
-        } catch (err) {
-          console.log(err);
-          // `onError` side-effect
-        }
-      },
+    autoCompleteRecipeById: builder.mutation({
+      query: (data) => ({
+        url: `${RECIPES_URL}/autocompleteId`,
+        method: 'POST',
+        body: data,
+      }),
     }),
-    getProduct: builder.query({
-      query: (id) => ({ url: `${PRODUCTS_URL}/id/${id}` }),
+    autoCompleteRecipeByName: builder.mutation({
+      query: (data) => ({
+        url: `${RECIPES_URL}/autocompleteName`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    searchRecipeById: builder.query({
+      query: (id) => ({ url: `${RECIPES_URL}/${id}` }),
     }),
   }),
 });
 
 export const {
   useLoginMutation,
-  useLogoutMutation,
   useRegisterMutation,
-  useUpdateUserMutation,
-  useDeleteUserMutation,
-  useGetCartQuery,
-  useGetProductQuery,
+  useAddFavoriteMutation,
+  useSearchRecipeByNameMutation,
+  useAutoCompleteRecipeByIdMutation,
+  useAutoCompleteRecipeByNameMutation,
+  useSearchRecipeByIdQuery,
 } = userApiSlice;
