@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import SearchAppBar from '../components/navbar.jsx';
 import Carousel from '../components/Carousel.jsx';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 const HomeScreen = () => {
   // dummy menu to load on screen before recipes are populated
@@ -36,11 +36,10 @@ const HomeScreen = () => {
   ];
 
   return (
-    <div className="home-screen-outer">
-      <SearchAppBar />
-      <h1>Welcome to RecipEase !</h1>
+    <Stack alignItems="center">
+      <Typography variant="h2">Welcome to RecipEase!</Typography>
       <Carousel images={images} />
-    </div>
+    </Stack>
   );
 };
 

@@ -1,6 +1,6 @@
 //where the mongoose schema goes
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 const Schema = mongoose.Schema;
 
@@ -43,8 +43,8 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 
 userSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
-    const salt = await bcrypt.genSaltSync(Number(SALT_WORK_FACTOR));
-    this.password = await bcrypt.hashSync(this.password, salt);
+    const salt = await bcrypt.genSalt(Number(SALT_WORK_FACTOR));
+    this.password = await bcrypt.hash(this.password, salt);
   }
   next();
 });

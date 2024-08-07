@@ -16,6 +16,11 @@ import { useBoolean } from '../hooks/use-boolean';
 import { Iconify } from '../components/iconify';
 import { Form, Field } from '../components/hook-form';
 
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useLoginMutation } from '../slices/usersApiSlice';
+import { setUser } from '../slices/authSlice';
+
 // ----------------------------------------------------------------------
 
 export const SignInSchema = zod.object({
@@ -33,8 +38,10 @@ export const SignInSchema = zod.object({
 
 function LoginScreen() {
   const [errorMsg, setErrorMsg] = useState('');
-
   const password = useBoolean();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [login] = useLoginMutation();
 
   const defaultValues = {
     email: '',
@@ -54,9 +61,16 @@ function LoginScreen() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       console.log(data);
+
+      const res = await login(data).unwrap();
+
+      console.log(res);
+
+      dispatch(setUser({ ...res }));
+      navigate('/');
     } catch (error) {
       console.error(error);
-      setErrorMsg(error instanceof Error ? error.message : error);
+      setErrorMsg(error instanceof Error ? error.message : 'Invalid user email or password');
     }
   });
 
@@ -119,11 +133,11 @@ function LoginScreen() {
     <>
       {renderHead}
 
-      <Alert severity="info" sx={{ mb: 3 }}>
+      {/* <Alert severity="info" sx={{ mb: 3 }}>
         Use <strong>{defaultValues.email}</strong>
         {' with password '}
         <strong>{defaultValues.password}</strong>
-      </Alert>
+      </Alert> */}
 
       {!!errorMsg && (
         <Alert severity="error" sx={{ mb: 3 }}>

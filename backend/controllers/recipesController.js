@@ -18,7 +18,7 @@ exports.insertRecipes = async (req, res, next) => {
 
     const transformedData = transformDataForDB({ meals: allMeals });
 
-    //await Recipe.insertMany(transformedData);
+    await Recipe.insertMany(transformedData);
     res.status(200).json({ message: "Recipes inserted successfully" });
   } catch (err) {
     return next({

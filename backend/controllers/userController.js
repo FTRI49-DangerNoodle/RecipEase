@@ -1,9 +1,9 @@
-const jwt = require('jsonwebtoken');
-const { User } = require('../models/userData');
+const jwt = require("jsonwebtoken");
+const { User } = require("../models/userData");
 
 const UserController = {
   generateToken(userId) {
-    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "2h" });
   },
 
   // Register a new user
@@ -20,7 +20,7 @@ const UserController = {
 
       const token = UserController.generateToken(user._id);
 
-      res.cookie('token', token, {
+      res.cookie("token", token, {
         httpOnly: true,
         maxAge: 2 * 60 * 60 * 1000, // <----- 2 hours
       });
@@ -35,7 +35,7 @@ const UserController = {
       res.status(201).json(user);
     } catch (error) {
       if (error.code === 11000) {
-        res.status(409).send('Email already in use');
+        res.status(409).send("Email already in use");
       } else {
         res.status(500).send(error.message);
       }
@@ -45,14 +45,16 @@ const UserController = {
   async login(req, res) {
     try {
       const { email, password } = req.body;
-      let user = await User.findOne({ email }).populate('favoriteRecipes');
-      if (!user || !user.matchPassword(password)) {
-        return res.status(401).send('Invalid email or password');
+      let user = await User.findOne({ email }).populate("favoriteRecipes");
+      const isMatch = await user.matchPassword(password, user.password);
+
+      if (!user || !isMatch) {
+        return res.status(401).send("Invalid email or password");
       }
 
       const token = UserController.generateToken(user._id);
 
-      res.cookie('token', token, {
+      res.cookie("token", token, {
         httpOnly: true,
         maxAge: 2 * 60 * 60 * 1000, // <----- 2 hours
       });
@@ -70,13 +72,21 @@ const UserController = {
     }
   },
 
+  async logout(req, res) {
+    res.clearCookie('token');
+    res.status(200).send('Logged out successfully');
+  },
+
   // Get user details along with favorite recipes
   async getUserDetails(req, res) {
     const id = req.userId;
+    console.log(id)
     try {
-      const user = await User.findById(id).select('-password -createAt -updatedAt -__v').populate('favoriteRecipes');
+      const user = await User.findById(id)
+        .select("-password -createAt -updatedAt -__v")
+        .populate("favoriteRecipes");
       if (!user) {
-        return res.status(404).send('User not found');
+        return res.status(404).send("User not found");
       }
       res.status(200).json(user);
     } catch (error) {
@@ -86,7 +96,7 @@ const UserController = {
 
   // Update favorite recipes
   async updateFavorites(req, res) {
-    console.log('hit');
+    console.log("hit");
     const id = req.userId;
     try {
       const { recipeId } = req.body;
@@ -100,7 +110,7 @@ const UserController = {
         user.favoriteRecipes.push(recipeId); // Add if not exists
       }
       await user.save();
-      res.status(200).send('Favorites updated successfully');
+      res.status(200).send("Favorites updated successfully");
     } catch (error) {
       res.status(500).send(error.message);
     }

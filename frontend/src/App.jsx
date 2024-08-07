@@ -1,15 +1,15 @@
 import { Outlet } from 'react-router-dom';
-import Header from './components/Header';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import SearchAppBar from 'src/components/navbar.jsx';
 
 function App() {
   return (
     <>
       <CssBaseline />
-      <Header />
-      <Container maxWidth="sm">
+      <SearchAppBar />
+      <Container>
         <Outlet />
       </Container>
     </>
