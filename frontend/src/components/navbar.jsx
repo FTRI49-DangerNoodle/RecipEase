@@ -72,9 +72,13 @@ export default function SearchAppBar() {
   // function to populate options array with recipes for Autocomplete in AppBar search
   const fetchRecipes = async () => {
     const fetchData = await fetch(
-      'http://www.localhost:3000/api/recipes/names-ids'
+      'http://www.localhost:5000/api/recipes/names-ids',
+      {
+        mode: 'no-cors',
+      }
     );
     const fetchedRecipes = await fetchData.json();
+    console.log('fetch', fetchedRecipes);
     fetchedRecipes.map((arr, idx) => {
       setOptions([...options, arr.name]);
       setRecipeCache([...recipeCache, arr]);
@@ -83,10 +87,8 @@ export default function SearchAppBar() {
     console.log('rc', recipeCache);
   };
 
-  // useEffect to populate recipes on initial page render
-  useEffect(() => {
-    if (!options) fetchRecipes();
-  }, []);
+  // Invoke fetch function to populate recipes on initial page render
+  fetchRecipes();
 
   // test search options array
   // const allOptions = [
