@@ -41,6 +41,8 @@ const router = createBrowserRouter(
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/recipe/:id" element={<RecipeScreen />} />
       <Route path="/favorite" element={<FavoritesScreen />} />
+      <Route path='/gallery' element={<GalleryScreen />} />
+      <Route path='/gallerytest' element={<GalleryScreenTest />} />
       <Route path="" element={<PrivateRoute />}></Route>
 >>>>>>> dev
     </Route>
