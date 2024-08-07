@@ -30,7 +30,7 @@ const GalleryScreen = () => {
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
-      // Simulate fetching data
+      // fecth
       setLoading(false);
     }, 500);
   }, []);

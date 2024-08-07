@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 
 const GalleryScreen = () => {
-  const { pageNumber = 1 } = useParams(); // Get the current page number from the URL
+  const { pageNumber = 1 } = useParams();
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,12 +18,11 @@ const GalleryScreen = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(
-      `http://yourapi.com/recipes?page=${pageNumber}&limit=${recipesPerPage}`
-    )
+    fetch()
+      //call here
       .then((response) => response.json())
       .then((data) => {
-        setRecipes(data); // Assuming the server response is an array of recipes
+        setRecipes(data);
         setLoading(false);
       })
       .catch((error) => {
