@@ -16,16 +16,16 @@ import LoginScreen from './screens/LoginScreen.jsx';
 import RegisterScreen from './screens/RegisterScreen.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
-// import LoginScreenTest from './screens/LoginScreenTest.jsx';
-// import ForgotScreen from './screens/ForgotScreen.jsx';
+import LoginScreenTest from './screens/LoginScreenTest.jsx';
+import ForgotScreen from './screens/ForgotScreen.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
       <Route index={true} path='/' element={<HomeScreen />} />
       <Route path='/login' element={<LoginScreen />} />
-      {/* <Route path='/login' element={<LoginScreenTest />} /> */}
-      {/* <Route path='/forgot' element={<ForgotScreen />} /> */}
+      <Route path='/loginTest' element={<LoginScreenTest />} />
+      <Route path='/forgot' element={<ForgotScreen />} />
       <Route path='/register' element={<RegisterScreen />} />
       <Route path='' element={<PrivateRoute />} />
     </Route>

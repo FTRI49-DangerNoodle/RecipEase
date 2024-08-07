@@ -15,8 +15,11 @@ import { useBoolean } from '../hooks/use-boolean';
 
 import { Iconify } from '../components/iconify';
 import { Form, Field } from '../components/hook-form';
-
-import { Link as ReactLink, useNavigate } from 'react-router-dom'; //to /register path
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useLoginMutation } from '../slices/usersApiSlice';
+import { setUser } from '../slices/authSlice';
+import { Link as ReactLink } from 'react-router-dom'; //to /register path
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +41,8 @@ function LoginScreenTest() {
 
   const password = useBoolean();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [login] = useLoginMutation();
 
   const defaultValues = {
     email: '',
@@ -57,18 +62,20 @@ function LoginScreenTest() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       console.log(data);
-      const response = await fetch('/authorizationendpoint', {
-        //to replace endpoint
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+
+      const response = await login(data).unwrap();
+
+      console.log(response);
+
       if (!response.ok) {
-        setErrorMsg('Username or password invalid');
+        navigate('/');
+        // setErrorMsg('Username or password invalid');
         return;
       }
+
+      dispatch(setUser({ ...response }));
+      navigate('/');
+
       const res = await response.json();
       localStorage.setItem('token', res.token);
       navigate('/');
