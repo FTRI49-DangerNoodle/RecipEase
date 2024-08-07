@@ -2,7 +2,7 @@ const Recipe = require("../models/recipesData.js");
 const axios = require("axios");
 const transformDataForDB = require("../DB_insert_algorithm/transformDataForDB.js");
 
-exports.insertRecipes = async (req, res) => {
+exports.insertRecipes = async (req, res, next) => {
   try {
     const letters = "abcdefghijklmnopqrstuvwxyz".split("");
     const allMeals = [];
@@ -20,7 +20,7 @@ exports.insertRecipes = async (req, res) => {
 
     //await Recipe.insertMany(transformedData);
     res.status(200).json({ message: "Recipes inserted successfully" });
-  } catch (error) {
+  } catch (err) {
     return next({
       message: "error in insertRecipes: " + err,
       log: err,
@@ -28,9 +28,9 @@ exports.insertRecipes = async (req, res) => {
   }
 };
 
-exports.getRecipeByName = async (req, res) => {
+exports.getRecipeByName = async (req, res, next) => {
   const { name } = req.body;
-console.log("hit")
+
   try {
     const recipe = await Recipe.findOne({ name: new RegExp(name, "i") });
     if (recipe) {
@@ -38,7 +38,7 @@ console.log("hit")
     } else {
       res.status(404).json({ message: "Recipe not found" });
     }
-  } catch (error) {
+  } catch (err) {
     return next({
       message: "error in getRecipeByName: " + err,
       log: err,
@@ -46,20 +46,51 @@ console.log("hit")
   }
 };
 
-exports.getRecipeById = async (req, res) => {
-    const { id } = req.params;
+exports.getRecipeById = async (req, res, next) => {
+  const { id } = req.params;
 
-    try {
-        const recipe = await Recipe.findById(id);
-        if (recipe) {
-            res.status(200).json(recipe);
-        } else {
-            res.status(404).json({ message: 'Recipe not found' });
-        }
-    }  catch (error) {
-        return next({
-          message: "error in getRecipeById: " + err,
-          log: err,
-        });
-      }
+  try {
+    const recipe = await Recipe.findById(id);
+    if (recipe) {
+      res.status(200).json(recipe);
+    } else {
+      res.status(404).json({ message: "Recipe not found" });
+    }
+  } catch (err) {
+    return next({
+      message: "error in getRecipeById: " + err,
+      log: err,
+    });
+  }
+};
+exports.autoCompleteByQueryId = async (req, res, next) => {
+  const { query } = req.query;
+
+  try {
+    const recipes = await Recipe.find({ name: new RegExp("^" + query, "i") })
+      .select("name")
+      .limit(10);
+    res.status(200).json(recipes);
+  } catch (err) {
+    return next({
+      message: "error in getAutocompleteSuggestions: " + err,
+      log: err,
+    });
+  }
+};
+
+exports.autoCompleteByName = async (req, res, next) => {
+  const { name } = req.body;
+
+  try {
+    const recipes = await Recipe.find({ name: new RegExp("^" + name, "i") })
+      .select("name")
+      .limit(10);
+    res.status(200).json(recipes);
+  } catch (err) {
+    return next({
+      message: "error in getAutocompleteSuggestions: " + err,
+      log: err,
+    });
+  }
 };

@@ -1,9 +1,3 @@
-import React from 'react';
-
-// const RegisterScreen = () => {
-//   return <div>RegisterScreen</div>;
-// };
-
 import { z as zod } from 'zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';

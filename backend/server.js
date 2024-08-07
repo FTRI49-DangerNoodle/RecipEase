@@ -1,26 +1,25 @@
-/**
- Date: 8/3/2024
- Coauthors: Peter Larcheveque and Erin Lee
- Description: File to centralize routes for internal server
- */
-console.log('we are in server');
-const path = require('path'); //we aren't currently using this
 const express = require('express');
-const app = express();
+const path = require('path'); //we aren't currently using this
+const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const PORT = 5000;
 const cors = require('cors');
+
+dotenv.config();
+const app = express();
+
+const PORT = process.env.PORT || 5000;
 
 //require in controllers and models;
 const recipesController = require('./controllers/recipesController');
 const userController = require('./controllers/userController');
 const userDB = require('./models/userData');
 const recipesDB = require('./models/recipesData');
-const recipeRoutes = require('./routes/recipieRoutes.js'); 
+const recipeRoutes = require('./routes/recipieRoutes.js');
+const userRoutes = require('./routes/userRoutes.js');
 
 // connect to mongoose db in the cloud
 const MONGO_URI =
-  'mongodb+srv://david:ecommercescratchproject@cluster0.k7fwyhh.mongodb.net/RecipEase';
+  process.env.MONGO_URI || 'mongodb+srv://david:ecommercescratchproject@cluster0.k7fwyhh.mongodb.net/RecipEase';
 
 const connectDB = async () => {
   try {
@@ -41,19 +40,14 @@ connectDB();
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
-app.use(express.static(path.resolve(__dirname, '../dist/index.html')));
+//app.use(express.static(path.resolve(__dirname, '../dist/index.html')));
 
 /**
  * define route handlers
  */
 // Get all recipes and insert into DB
-// http: //localhost:3000/
-app.post('/register', userController.register);
-
-
+app.use('/api/users', userRoutes);
 app.use('/api/recipes', recipeRoutes);
-
 
 app.use((req, res) => res.sendStatus(404));
 
@@ -63,6 +57,13 @@ app.use((err, req, res, next) => {
     status: 500,
     message: { err: '' },
   };
+
+  // If Mongoose not found error, set to 404 and change message
+  if (err.name === 'CastError' && err.kind === 'ObjectId') {
+    defaultErr.status = 404;
+    defaultErr.message = { err: 'Resource not found' };
+  }
+
   const errorObj = Object.assign({}, defaultErr, err);
   console.log(errorObj.log);
   return res.status(errorObj.status).json(errorObj.message);

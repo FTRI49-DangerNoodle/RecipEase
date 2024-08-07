@@ -3,21 +3,17 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const recipe = new Schema({
-    name: {type: String},
-    catagory: {type: String},
-    cuisine: {type: String},
-    picutre: {type: String},
-    ingredients: {type: Array},
-    instructions: {type: Array}, 
-    tags: {type: Array},
-    youtubeLink: {type: String},
+  name: { type: String },
+  catagory: { type: String },
+  cuisine: { type: String },
+  picutre: { type: String },
+  ingredients: { type: Array },
+  instructions: { type: Array },
+  tags: { type: Array },
+  youtubeLink: { type: String },
 });
 
-module.exports = mongoose.model('Recipes', recipe);
-
-
-
-
+module.exports = mongoose.model('Recipe', recipe);
 
 /*
 {
