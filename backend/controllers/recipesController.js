@@ -1,66 +1,65 @@
-//middleware functions go here
-// const Recipe = require('./models/recipesData');
-// const fetch = require('node-fetch'); // Import node-fetch
-// import fetch from 'node-fetch';
+const Recipe = require("../models/recipesData.js");
+const axios = require("axios");
+const transformDataForDB = require("../DB_insert_algorithm/transformDataForDB.js");
 
+exports.insertRecipes = async (req, res) => {
+  try {
+    const letters = "abcdefghijklmnopqrstuvwxyz".split("");
+    const allMeals = [];
 
-let recipeController = {};
-
-recipeController.getAllRecipes = async (req, res, next) => {
-    try {
-        const urls = []; // will hold 26 fetch urls
-        for (let n = 0; n <= 25; n++) { // loop from a to z, create fetch urls to grab all dishes starting with each letter in the alphabet
-            chr = String.fromCharCode(97 + n);
-            const url = `https://www.themealdb.com/api/json/v1/1/search.php?f=${chr}`;
-            urls.push(url);
-        }
-
-        // map over all urls and complete all fetch req. using Promise.all
-        const fetchPromises = urls.map(url => fetch(url).then(response => response.json()));
-        const results = await Promise.all(fetchPromises);
-
-        const allRecipes = results.flatMap(response => response.meals || []); // converts array of nested json objects into array of unnested json objects
-        console.log('Total recipes obtained: ', allRecipes.length);
-        res.locals.data = allRecipes;
-        return next();
-    } catch (err) {
-        return next({
-            log: `Error in recipeController.getRecipe: ${err}`,
-            status: 500,
-            message: { err: 'Was not able to find recipe' }
-        });
+    for (let letter of letters) {
+      const response = await axios.get(
+        `https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`
+      );
+      if (response.data.meals) {
+        allMeals.push(...response.data.meals);
+      }
     }
 
-    //     fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${chr}`)
-    //     .then((data) => {return data.json()})
-    //     .then((data) => {
-    //         console.log('hello')
-    //         results.push(data)
-    //     })
-    //     .catch(error => {
-    //     return next({
-    //         log: `Error in recipeController.getRecipe: ${error}`,
-    //         status: 500,
-    //         message: { err: 'Was not able to find recipe' }
-    //     });
-    // });
-    // await console.log(results);
-    // res.locals.allRecipes = await results;
-    // return await next();
-    // const results = [];
-    // fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${chr}`)
-    // .then((data) => {return data.json()})
-    // .then((data) => {
-    //     res.locals.allRecipes = data;
-    //     return next();
-    // })
-    // .catch(error => {
-    //     return next({
-    //         log: `Error in recipeController.getRecipe: ${error}`,
-    //         status: 500,
-    //         message: { err: 'Was not able to find recipe' }
-    //     });
-    // });
-}
+    const transformedData = transformDataForDB({ meals: allMeals });
 
-module.exports = recipeController;
+    //await Recipe.insertMany(transformedData);
+    res.status(200).json({ message: "Recipes inserted successfully" });
+  } catch (error) {
+    return next({
+      message: "error in insertRecipes: " + err,
+      log: err,
+    });
+  }
+};
+
+exports.getRecipeByName = async (req, res) => {
+  const { name } = req.body;
+console.log("hit")
+  try {
+    const recipe = await Recipe.findOne({ name: new RegExp(name, "i") });
+    if (recipe) {
+      res.status(200).json(recipe);
+    } else {
+      res.status(404).json({ message: "Recipe not found" });
+    }
+  } catch (error) {
+    return next({
+      message: "error in getRecipeByName: " + err,
+      log: err,
+    });
+  }
+};
+
+exports.getRecipeById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const recipe = await Recipe.findById(id);
+        if (recipe) {
+            res.status(200).json(recipe);
+        } else {
+            res.status(404).json({ message: 'Recipe not found' });
+        }
+    }  catch (error) {
+        return next({
+          message: "error in getRecipeById: " + err,
+          log: err,
+        });
+      }
+};

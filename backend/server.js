@@ -16,41 +16,34 @@ const recipesController = require('./controllers/recipesController');
 const userController = require('./controllers/userController');
 const userDB = require('./models/userData');
 const recipesDB = require('./models/recipesData');
+const recipeRoutes = require('./routes/recipieRoutes.js'); 
 
 // connect to mongoose db in the cloud
 const MONGO_URI =
-  'mongodb+srv://larchevequepeter:OvtaaSnLuPqm8St3@cluster0.k8tpyij.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+  'mongodb+srv://david:ecommercescratchproject@cluster0.k7fwyhh.mongodb.net/RecipEase';
 
-mongoose
-  .connect(MONGO_URI, {
-    // options for the connect method to parse the URI
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    // sets the name of the DB that our collections are part of
-    dbName: 'recipease',
-  })
-  .then(() => {
+const connectDB = async () => {
+  try {
+    await mongoose.connect(MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log('Connected to Mongo DB.');
-    //call your function that fetches from 3rd party api declared in recipesController.js(?)
-  })
-  .catch((err) => console.log(err));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+connectDB();
 
 /**
  * handle parsing request body
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-/**
- * require routers
- */
-// const recipeaseRouter = express.Router();
-// app.use('/recipease', recipeaseRouter);
-/**
- * handle requests for static files
- */
 app.use(cors());
 app.use(express.static(path.resolve(__dirname, '../dist/index.html')));
+
 /**
  * define route handlers
  */
@@ -58,35 +51,10 @@ app.use(express.static(path.resolve(__dirname, '../dist/index.html')));
 // http: //localhost:3000/
 app.post('/register', userController.register);
 
-// obtain all recipes and insert into collection: recipes inside Database: recipease
-app.get('/', recipesController.getAllRecipes, (req, res) => {
-  recipesDB.insertMany(res.locals.data);
-  return res.status(200).json(res.locals.data);
-});
 
-// send all the recipes from the collection
-app.use('/api/recipes', (req, res) => {
-  console.log('sending recipes...');
-  console.log(recipesDB);
-  recipesDB
-    .find({})
-    .exec()
-    .then((data) => res.status(200).json(data))
-    .catch((err) => next(err));
-});
-// app.get('/', recipeController.getRecipe, (req, res) => {
-//     console.log('we are in server');
-//     return res.status(200).json(res.locals);
-// })
+app.use('/api/recipes', recipeRoutes);
 
-// get individual recipes
-// app.get('/recipes', recipeController.getRecipe, (req, res) => {
-//     return res.status(200).json(res.locals);
-// })
 
-/**
- * configure express global error handler
- */
 app.use((req, res) => res.sendStatus(404));
 
 app.use((err, req, res, next) => {

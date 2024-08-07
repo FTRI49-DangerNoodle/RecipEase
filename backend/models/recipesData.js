@@ -3,59 +3,55 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const recipe = new Schema({
-    idMeal: {type: Number, required: true, unique: true},
-    strMeal: {type: String, required: true},
-    strDrinkAlternate: {type: String},
-    strCategory: {type: String},
-    strArea: {type: String},
-    strInstructions: {type: String},
-    strMealThumb: {type: String},
-    strTags: {type: String},
-    strYoutube: {type: String},
-    strIngredient1: {type: String},
-    strIngredient2: {type: String},
-    strIngredient3: {type: String},
-    strIngredient4: {type: String},
-    strIngredient5: {type: String},
-    strIngredient6: {type: String},
-    strIngredient7: {type: String},
-    strIngredient8: {type: String},
-    strIngredient9: {type: String},
-    strIngredient10: {type: String},
-    strIngredient11: {type: String},
-    strIngredient12: {type: String},
-    strIngredient13: {type: String},
-    strIngredient14: {type: String},
-    strIngredient15: {type: String},
-    strIngredient16: {type: String},
-    strIngredient17: {type: String},
-    strIngredient18: {type: String},
-    strIngredient19: {type: String},
-    strIngredient20: {type: String},
-    strMeasure1: {type: String},
-    strMeasure2: {type: String},
-    strMeasure3: {type: String},
-    strMeasure4: {type: String},
-    strMeasure5: {type: String},
-    strMeasure6: {type: String},
-    strMeasure7: {type: String},
-    strMeasure8: {type: String},
-    strMeasure9: {type: String},
-    strMeasure10: {type: String},
-    strMeasure11: {type: String},
-    strMeasure12: {type: String},
-    strMeasure13: {type: String},
-    strMeasure14: {type: String},
-    strMeasure15: {type: String},
-    strMeasure16: {type: String},
-    strMeasure17: {type: String},
-    strMeasure18: {type: String},
-    strMeasure19: {type: String},
-    strMeasure20: {type: String},
-    strSource: {type: String},
-    strImageSource: {type: String},
-    strCreativeCommonsConfirmed: {type: String},
-    dateModified: {type: String}
+    name: {type: String},
+    catagory: {type: String},
+    cuisine: {type: String},
+    picutre: {type: String},
+    ingredients: {type: Array},
+    instructions: {type: Array}, 
+    tags: {type: Array},
+    youtubeLink: {type: String},
 });
 
 module.exports = mongoose.model('Recipes', recipe);
+
+
+
+
+
+/*
+{
+  "meals": [
+    {
+      "idMeal": "52772",
+      "strMeal": "Teriyaki Chicken Casserole",
+      "strDrinkAlternate": null,
+      "strCategory": "Chicken",
+      "strArea": "Japanese",
+      "strInstructions": "Preheat oven to 350° F. Spray a 9x13-inch baking pan with non-stick spray.\nCombine soy sauce, ½ cup water, brown sugar, ginger, and garlic in a small saucepan and cover. Bring to a boil over medium heat. Remove lid and cook for one minute once boiling.\nMeanwhile, stir together the corn starch and 2 tablespoons of water in a separate dish until smooth. Once sauce is boiling, add mixture to the saucepan and stir to combine. Cook until the sauce starts to thicken then remove from heat.\nPlace the chicken breasts in the prepared pan. Pour one cup of the sauce over top of chicken. Place chicken in oven and bake for 35 minutes or until cooked through. Remove from oven and shred chicken in the dish using two forks.\n*Meanwhile, steam or cook the vegetables according to package directions.\nAdd the cooked vegetables and rice to the casserole dish with the chicken. Add most of the remaining sauce, reserving a bit to drizzle over the top when serving. Gently toss everything together in the casserole dish until combined. Return to oven and cook for 15 minutes. Remove from oven and let stand for 5 minutes before serving. Drizzle each serving with remaining sauce. Enjoy!",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg",
+      "strTags": "Meat,Casserole",
+      "strYoutube": "https://www.youtube.com/watch?v=4aZr5hZXP_s",
+      "strIngredient1": "soy sauce",
+      "strIngredient2": "water",
+      "strIngredient3": "brown sugar",
+      "strIngredient4": "ground ginger",
+      "strIngredient5": "minced garlic",
+      "strIngredient6": "cornstarch",
+      "strIngredient7": "chicken breasts",
+      "strIngredient8": "stir-fry vegetables",
+      "strIngredient9": "brown rice",
+      "strMeasure1": "3/4 cup",
+      "strMeasure2": "1/2 cup",
+      "strMeasure3": "1/4 cup",
+      "strMeasure4": "1/2 teaspoon",
+      "strMeasure5": "1/2 teaspoon",
+      "strMeasure6": "4 Tablespoons",
+      "strMeasure7": "2",
+      "strMeasure8": "1 (12 oz.)",
+      "strMeasure9": "3 cups"
+    }
+  ]
+}
+
+*/
