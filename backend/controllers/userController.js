@@ -2,6 +2,10 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models/userData');
 
 const UserController = {
+  generateToken(userId) {
+    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '2h' });
+  },
+
   // Register a new user
   async register(req, res) {
     try {
@@ -14,13 +18,19 @@ const UserController = {
         password,
       });
 
-      // remove the password
+      // Remove the password from the response
       const networkData = {
         _id: registeredUser._id,
         firstName: registeredUser.firstName,
         lastName: registeredUser.lastName,
         email: registeredUser.email,
       };
+      const token = UserController.generateToken(registeredUser._id);
+
+      res.cookie('token', token, {
+        httpOnly: true, 
+        maxAge: 2 * 60 * 60 * 1000, // <----- 2 hours
+      });
 
       res.status(201).json(networkData);
     } catch (error) {
@@ -31,7 +41,6 @@ const UserController = {
       }
     }
   },
-
   // Authenticate a user
   async login(req, res) {
     try {
@@ -40,7 +49,13 @@ const UserController = {
       if (!user || !user.matchPassword(password)) {
         return res.status(401).send('Invalid email or password');
       }
-      //      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
+
+      const token =UserController.generateToken(user._id);
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        maxAge: 2 * 60 * 60 * 1000, // <----- 2 hours
+      });
 
       const networkData = {
         _id: user._id,
@@ -57,7 +72,7 @@ const UserController = {
 
   // Get user details along with favorite recipes
   async getUserDetails(req, res) {
-    const id = req.params.id;
+    const id = req.userId;
     try {
       const user = await User.findById(id).select('-password -createAt -updatedAt -__v').populate('favoriteRecipes');
       if (!user) {
@@ -71,8 +86,10 @@ const UserController = {
 
   // Update favorite recipes
   async updateFavorites(req, res) {
+    console.log("hit")
+    const id = req.userId;
     try {
-      const { id, recipeId } = req.body;
+      const {recipeId } = req.body;
 
       const user = await User.findById(id);
       const index = user.favoriteRecipes.indexOf(recipeId);

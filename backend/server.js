@@ -3,6 +3,7 @@ const path = require('path'); //we aren't currently using this
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 dotenv.config();
 const app = express();
@@ -38,6 +39,7 @@ connectDB();
 /**
  * handle parsing request body
  */
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 //app.use(express.static(path.resolve(__dirname, '../dist/index.html')));

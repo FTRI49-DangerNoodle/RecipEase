@@ -65,7 +65,6 @@ exports.getRecipeById = async (req, res, next) => {
 };
 exports.autoCompleteByQueryId = async (req, res, next) => {
   const { query } = req.query;
-
   try {
     const recipes = await Recipe.find({ name: new RegExp("^" + query, "i") })
       .select("name")
@@ -81,7 +80,6 @@ exports.autoCompleteByQueryId = async (req, res, next) => {
 
 exports.autoCompleteByName = async (req, res, next) => {
   const { name } = req.body;
-
   try {
     const recipes = await Recipe.find({ name: new RegExp("^" + name, "i") })
       .select("name")
