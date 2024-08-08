@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconButton } from '@mui/material';
 import { Star, StarBorder } from '@mui/icons-material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useAddFavoriteMutation } from '../slices/usersApiSlice';
 import { useSelector } from 'react-redux';
-import { selectFavs } from '../slices/authSlice.js';
+import { selectFavs, selectUser } from '../slices/authSlice.js';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Item = ({ item }) => {
   const [addFavorite, { isAddFavLoading }] = useAddFavoriteMutation();
@@ -37,16 +39,18 @@ const Item = ({ item }) => {
     >
       <div>
         <h2>{item.name}</h2>
-        <img
-          src={item.picture}
-          alt={item.name}
-          style={{
-            width: '100px',
-            height: '100px',
-            objectFit: 'cover',
-            borderRadius: '8px',
-          }}
-        />
+        <Link to={`/recipe/${item._id}`}>
+          <img
+            src={item.picture}
+            alt={item.name}
+            style={{
+              width: '100px',
+              height: '100px',
+              objectFit: 'cover',
+              borderRadius: '8px',
+            }}
+          />
+        </Link>
         <p>{item.catagory + ', ' + item.cuisine}</p>
       </div>
       <IconButton onClick={toggleFavorite} color={'error'}>
@@ -57,7 +61,15 @@ const Item = ({ item }) => {
 };
 
 const FavoritesScreen = () => {
-  const favorites = useSelector(selectFavs);
+  let favorites = useSelector(selectFavs);
+  const userInfo = useSelector(selectUser);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userInfo) navigate('/login');
+  }, [userInfo]);
+
+  if (!favorites) favorites = [];
 
   return (
     <div className="favorites-container" style={{ padding: '16px' }}>
