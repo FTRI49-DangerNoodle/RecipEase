@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useRegisterMutation } from '../slices/usersApiSlice';
 import { setUser } from '../slices/authSlice';
+import { Container } from '@mui/material';
 
 export const SignUpSchema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required!' }),
@@ -118,7 +119,7 @@ function RegisterScreen() {
 
       <LoadingButton
         fullWidth
-        color="inherit"
+        color="primary"
         size="large"
         type="submit"
         variant="contained"
@@ -154,19 +155,21 @@ function RegisterScreen() {
 
   return (
     <>
-      {renderHead}
+      <Container sx={{ mt: 5, width: '60%' }}>
+        {renderHead}
 
-      {!!errorMsg && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {errorMsg}
-        </Alert>
-      )}
+        {!!errorMsg && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {errorMsg}
+          </Alert>
+        )}
 
-      <Form methods={methods} onSubmit={onSubmit}>
-        {renderForm}
-      </Form>
+        <Form methods={methods} onSubmit={onSubmit}>
+          {renderForm}
+        </Form>
 
-      {renderTerms}
+        {renderTerms}
+      </Container>
     </>
   );
 }
