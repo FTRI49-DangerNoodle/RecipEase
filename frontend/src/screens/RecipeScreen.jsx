@@ -40,11 +40,12 @@ function RecipeScreen() {
   const [expanded, setExpanded] = React.useState(false);
   const { id } = useParams();
   const { data: recipe, isLoading, isSuccess, isFetching, isError } = useSearchRecipeByIdQuery(id);
-  const favorites = useSelector(selectFavs);
+  let favorites = useSelector(selectFavs);
   const [addFavorite, { isAddFavLoading }] = useAddFavoriteMutation();
 
   // set the color of the favorite icon based on user state
   let favColor = '';
+  if (!favorites) favorites = [];
   const isFavRecipe = favorites.some((el) => el._id == id);
   if (isFavRecipe) favColor = 'error';
 
