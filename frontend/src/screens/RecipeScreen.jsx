@@ -19,9 +19,11 @@ import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
-import { useSearchRecipeByIdQuery } from '../slices/usersApiSlice';
+import { useSearchRecipeByIdQuery, useAddFavoriteMutation } from '../slices/usersApiSlice';
+import { selectFavs } from '../slices/authSlice.js';
 import Link from '@mui/material/Link';
 import YouTubeIcon from '@mui/icons-material/YouTube';
+import { useSelector } from 'react-redux';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -38,9 +40,29 @@ function RecipeScreen() {
   const [expanded, setExpanded] = React.useState(false);
   const { id } = useParams();
   const { data: recipe, isLoading, isSuccess, isFetching, isError } = useSearchRecipeByIdQuery(id);
+  const favorites = useSelector(selectFavs);
+  const [addFavorite, { isAddFavLoading }] = useAddFavoriteMutation();
+
+  // set the color of the favorite icon based on user state
+  let favColor = '';
+  const isFavRecipe = favorites.some((el) => el._id == id);
+  if (isFavRecipe) favColor = 'error';
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
+  };
+
+  const handleFavoriteClick = async () => {
+    try {
+      const res = await addFavorite({
+        recipeId: id,
+      }).unwrap();
+    } catch (error) {
+      // if (error.originalStatus === 200 || error.data === 'Favorites updated successfully') {
+      //   console.log('success');
+      // }
+      console.log(error);
+    }
   };
 
   if (isLoading)
@@ -57,7 +79,6 @@ function RecipeScreen() {
       </Alert>
     );
 
-  console.log(recipe);
   return (
     <Stack sx={{ mt: 5 }} alignItems="center">
       <Card sx={{ maxWidth: 600 }}>
@@ -75,18 +96,17 @@ function RecipeScreen() {
           title={recipe.name}
           subheader={recipe.catagory + ', ' + recipe.cuisine}
         />
-        <CardMedia component="img" height="194" image={recipe.picutre} alt="Paella dish" />
+        <CardMedia component="img" height="194" image={recipe.picture} alt={recipe.name} />
         <CardContent>
           <Link href={recipe.youtubeLink} target="_blank" rel="noopener">
-            <YouTubeIcon></YouTubeIcon>
+            <YouTubeIcon fontSize="large"></YouTubeIcon>
           </Link>
           <Typography variant="body2" color="text.secondary">
-            This impressive paella is a perfect party dish and a fun meal to cook together with your guests. Add 1 cup
-            of frozen peas along with the mussels, if you like.
+            A perfect party dish and a fun meal to cook together with your guests.
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
+          <IconButton aria-label="add to favorites" onClick={handleFavoriteClick} color={favColor}>
             <FavoriteIcon />
           </IconButton>
           <IconButton aria-label="share">

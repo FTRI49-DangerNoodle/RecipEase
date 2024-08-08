@@ -1,4 +1,5 @@
 import { apiSlice } from './apiSlice';
+import { setUser } from '../slices/authSlice';
 
 const USERS_URL = '/api/users';
 const RECIPES_URL = '/api/recipes';
@@ -25,6 +26,33 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
+      // eslint-disable-next-line no-shadow-restricted-names
+      async onQueryStarted(undefined, { dispatch, queryFulfilled }) {
+        // `onStart` side-effect
+        try {
+          const { data } = await queryFulfilled;
+          // `onSuccess` side-effect
+          dispatch(setUser(data));
+        } catch (err) {
+          console.log(err);
+          // `onError` side-effect
+        }
+      },
+    }),
+    getUserDetails: builder.query({
+      query: () => `${USERS_URL}/userInfo`,
+      // eslint-disable-next-line no-shadow-restricted-names
+      async onQueryStarted(undefined, { dispatch, queryFulfilled }) {
+        // `onStart` side-effect
+        try {
+          const { data } = await queryFulfilled;
+          // `onSuccess` side-effect
+          dispatch(setUser(data));
+        } catch (err) {
+          console.log(err);
+          // `onError` side-effect
+        }
+      },
     }),
     searchRecipeByName: builder.mutation({
       query: (data) => ({
@@ -51,6 +79,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
       query: (id) => ({ url: `${RECIPES_URL}/${id}` }),
       providesTags: (_result, _err, id) => [{ type: 'Recipe', id }],
     }),
+    allRecipeNamesAndIds: builder.query({
+      query: () => ({ url: `${RECIPES_URL}/names-ids` }),
+      providesTags: (result = []) => [
+        ...result.map(({ _id }) => ({ type: 'Recipes', id: _id })),
+        { type: 'Recipes', id: 'LIST' },
+      ],
+    }),
   }),
 });
 
@@ -62,4 +97,6 @@ export const {
   useAutoCompleteRecipeByIdMutation,
   useAutoCompleteRecipeByNameMutation,
   useSearchRecipeByIdQuery,
+  useAllRecipeNamesAndIdsQuery,
+  useGetUserDetailsQuery,
 } = userApiSlice;

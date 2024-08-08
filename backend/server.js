@@ -17,7 +17,7 @@ const userDB = require('./models/userData');
 const recipesDB = require('./models/recipesData');
 const recipeRoutes = require('./routes/recipieRoutes.js');
 const userRoutes = require('./routes/userRoutes.js');
-
+app.use(cors())
 // connect to mongoose db in the cloud
 const MONGO_URI =
   process.env.MONGO_URI || 'mongodb+srv://david:ecommercescratchproject@cluster0.k7fwyhh.mongodb.net/RecipEase';
