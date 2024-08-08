@@ -20,9 +20,10 @@ import { useSelector } from 'react-redux';
 import { selectUser, logoutUser } from '../slices/authSlice.js';
 import { useDispatch } from 'react-redux';
 
-// boolean value for checkCache function to ensure fetched recipes for recipe cache is only done once when page renders
-let bool = false;
 export default function SearchAppBar() {
+  // state for boolean value to ensure fetch is done only when page is rendered
+  const [cacheLoaded, setCacheLoaded] = useState(false);
+
   // state for component anchor for AppBar drop-down menu
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -56,24 +57,24 @@ export default function SearchAppBar() {
   };
 
   const checkCache = () => {
-    if (bool === false) {
-      bool = true;
+    if (cacheLoaded === false) {
+      setCacheLoaded(true);
       fetchRecipes();
     }
   };
 
-  useEffect(() => checkCache);
+  useEffect(() => checkCache, [cacheLoaded]);
 
   // function to handle search logic after input submission
-  const handleSubmit = async (recipe) => {
+  const handleSubmit = (recipe) => {
     let redirect;
-    await recipeCache.forEach((arr) => {
-      if (arr.name === recipe) {
-        redirect = arr._id;
+    for (let i = 0; i < recipeCache.length; i++) {
+      if (recipeCache[i].name === recipe) {
+        redirect = recipeCache[i]._id;
         navigate(`/recipe/${redirect}`);
+        break;
       }
-    });
-    redirect = '';
+    }
   };
 
   // function to handle menu selection from AppBar drop-down menu
@@ -164,12 +165,6 @@ export default function SearchAppBar() {
                   >
                     <MenuItem onClick={handleClose}>All Recipes</MenuItem>
                   </Link>
-                  {/* <Link
-                    href="/api/recipes/all"
-                    style={{ color: 'white', textDiscoloration: 'none' }}
-                  >
-                    <MenuItem onClick={handleClose}>List</MenuItem>
-                  </Link> */}
                 </Menu>
                 <SearchIcon />
                 <Autocomplete
@@ -178,7 +173,12 @@ export default function SearchAppBar() {
                   onInputChange={(event, newInputValue) => {
                     setSearchTerm(newInputValue);
                   }}
-                  onSubmit={handleSubmit(searchTerm)}
+                  onSelect={(ev) => {
+                    {
+                      handleSubmit(searchTerm);
+                      ev.preventDefault();
+                    }
+                  }}
                   options={options}
                   disablePortal
                   id="recipe-search"
