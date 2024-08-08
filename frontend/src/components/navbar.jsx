@@ -104,11 +104,14 @@ export default function SearchAppBar() {
   const navigate = useNavigate();
   // function to handle search logic after input submission
   const handleSubmit = async (recipe) => {
-    console.log(recipeCache);
-    const recipeData = await recipeCache.find(recipe.name);
-    console.log('data', recipeData);
-    let recipeId = recipeData.id;
-    navigate(`api/recipes/${recipeId}`);
+    let redirect;
+    await recipeCache.forEach((arr) => {
+      if (arr.name === recipe) {
+        redirect = arr._id;
+        navigate(`/recipe/${redirect}`);
+      }
+    });
+    redirect = '';
   };
 
   // update state in real-time based on search box input
