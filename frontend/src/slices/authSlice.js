@@ -20,6 +20,8 @@ const authSlice = createSlice({
   },
 });
 
+export const selectFavs = (state) => state.auth.userInfo?.favoriteRecipes;
+
 export const { setUser, logoutUser } = authSlice.actions;
 
 export default authSlice.reducer;

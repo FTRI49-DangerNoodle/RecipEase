@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useLoginMutation } from '../slices/usersApiSlice';
 import { setUser } from '../slices/authSlice';
+import { Box, Container } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -117,7 +118,7 @@ function LoginScreen() {
 
       <LoadingButton
         fullWidth
-        color="inherit"
+        color="primary"
         size="large"
         type="submit"
         variant="contained"
@@ -131,23 +132,25 @@ function LoginScreen() {
 
   return (
     <>
-      {renderHead}
+      <Container sx={{ mt: 5, width: '60%' }}>
+        {renderHead}
 
-      {/* <Alert severity="info" sx={{ mb: 3 }}>
+        {/* <Alert severity="info" sx={{ mb: 3 }}>
         Use <strong>{defaultValues.email}</strong>
         {' with password '}
         <strong>{defaultValues.password}</strong>
       </Alert> */}
 
-      {!!errorMsg && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {errorMsg}
-        </Alert>
-      )}
+        {!!errorMsg && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {errorMsg}
+          </Alert>
+        )}
 
-      <Form methods={methods} onSubmit={onSubmit}>
-        {renderForm}
-      </Form>
+        <Form methods={methods} onSubmit={onSubmit}>
+          {renderForm}
+        </Form>
+      </Container>
     </>
   );
 }

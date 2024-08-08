@@ -89,7 +89,7 @@ exports.getRecipesWithPagination = async (req, res, next) => {
     }
 
     const recipes = await Recipe.find({})
-      .select("name image")
+      .select("name picture")
       .skip((pageNumber - 1) * 10)
       .limit(10);
 
@@ -120,7 +120,7 @@ exports.getRecipesWithPaginationId = async (req, res, next) => {
     }
 
     const recipes = await Recipe.find({})
-      .select("name image")
+      .select("name picture")
       .skip((pageNumber - 1) *10)
       .limit(10);
 
