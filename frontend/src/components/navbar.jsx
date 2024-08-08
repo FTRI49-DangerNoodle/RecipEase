@@ -9,60 +9,27 @@ import InputBase from '@mui/material/InputBase';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import { Link } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Menu, MenuItem, Slide, useScrollTrigger } from '@mui/material';
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { selectUser, logoutUser } from '../slices/authSlice.js';
+import { useDispatch } from 'react-redux';
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(1),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  width: '100%',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    [theme.breakpoints.up('sm')]: {
-      width: '12ch',
-      '&:focus': {
-        width: '20ch',
-      },
-    },
-  },
-}));
-
+// boolean value for checkCache function to ensure fetched recipes for recipe cache is only done once when page renders
 let bool = false;
 export default function SearchAppBar() {
   // state for component anchor for AppBar drop-down menu
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userInfo = useSelector(selectUser);
+
   // state for search term
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -81,15 +48,12 @@ export default function SearchAppBar() {
     });
     const fetchedRecipes = await fetchData.json();
     fetchedRecipes.map((arr, idx) => {
-      // setOptions(options.push(arr.name));
       recipeCacheArr.push(arr);
       optionArr.push(arr.name);
-      // recipeCacheArr.push(arr);
     });
     setOptions(optionArr);
     setRecipeCache(recipeCacheArr);
   };
-  // console.log(options);
 
   const checkCache = () => {
     if (bool === false) {
@@ -100,8 +64,6 @@ export default function SearchAppBar() {
 
   useEffect(() => checkCache);
 
-  // useNavigate function to route search request to paginated data for chosen recipe
-  const navigate = useNavigate();
   // function to handle search logic after input submission
   const handleSubmit = async (recipe) => {
     let redirect;
@@ -114,11 +76,6 @@ export default function SearchAppBar() {
     redirect = '';
   };
 
-  // update state in real-time based on search box input
-  // useEffect(() => {
-  //   if (searchTerm) console.log(searchTerm);
-  // }, [searchTerm]);
-
   // function to handle menu selection from AppBar drop-down menu
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -127,6 +84,14 @@ export default function SearchAppBar() {
   // function to close menu after selection from AppBar drop-down menu
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLoginLogoff = (event) => {
+    if (userInfo) {
+      dispatch(logoutUser(null));
+    } else {
+      navigate('/');
+    }
   };
 
   // trigger for Slide tags in AppBar to make bar disappear when scrolling down
@@ -142,19 +107,9 @@ export default function SearchAppBar() {
     },
   });
 
-  // state for search function
-  // const [searchTerm, setSearchTerm] = useState(null);
-
-  // state for login button on AppBar
-  const [loggedIn, setLoggedIn] = useState(null);
-
   // ternary label for login button label
-  const loginButton = loggedIn ? 'Logout' : 'Login';
+  const loginButton = userInfo ? 'Logout' : 'Login';
 
-  // function to handle state as input is received from search bar on the AppBar
-  // const handleState = (input) => {
-  //   setSearchTerm(input);
-  // };
   return (
     <div className="appbar-outer-container">
       <ThemeProvider theme={theme}>
@@ -232,7 +187,11 @@ export default function SearchAppBar() {
                     <TextField {...params} label="Recipe Search" />
                   )}
                 />
-                <Button href="/login" color="inherit">
+                <Button
+                  href="/login"
+                  color="inherit"
+                  onClick={handleLoginLogoff}
+                >
                   {loginButton}
                 </Button>
               </Toolbar>
