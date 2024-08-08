@@ -82,7 +82,9 @@ const UserController = {
     const id = req.userId;
     console.log(id);
     try {
-      const user = await User.findById(id).select('-password -createAt -updatedAt -__v').populate('favoriteRecipes');
+      const user = await User.findById(id)
+        .select('-password -createAt -updatedAt -__v')
+        .populate('favoriteRecipes');
       if (!user) {
         return res.status(404).send('User not found');
       }
@@ -108,7 +110,9 @@ const UserController = {
         user.favoriteRecipes.push(recipeId); // Add if not exists
       }
       user = await user.save();
-      user = await User.findById(id).select('-password -createAt -updatedAt -__v').populate('favoriteRecipes');
+      user = await User.findById(id)
+        .select('-password -createAt -updatedAt -__v')
+        .populate('favoriteRecipes');
 
       res.status(200).json(user);
     } catch (error) {

@@ -1,9 +1,9 @@
-const Recipe = require("../models/recipesData.js");
-const axios = require("axios");
-const transformDataForDB = require("../DB_insert_algorithm/transformDataForDB.js");
+const Recipe = require('../models/recipesData.js');
+const axios = require('axios');
+const transformDataForDB = require('../DB_insert_algorithm/transformDataForDB.js');
 exports.insertRecipes = async (req, res, next) => {
   try {
-    const letters = "abcdefghijklmnopqrstuvwxyz".split("");
+    const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
     const allMeals = [];
 
     for (let letter of letters) {
@@ -18,10 +18,10 @@ exports.insertRecipes = async (req, res, next) => {
     const transformedData = transformDataForDB({ meals: allMeals });
 
     await Recipe.insertMany(transformedData);
-    res.status(200).json({ message: "Recipes inserted successfully" });
+    res.status(200).json({ message: 'Recipes inserted successfully' });
   } catch (err) {
     return next({
-      message: "error in insertRecipes: " + err,
+      message: 'error in insertRecipes: ' + err,
       log: err,
     });
   }
@@ -31,15 +31,15 @@ exports.getRecipeByName = async (req, res, next) => {
   const { name } = req.body;
 
   try {
-    const recipe = await Recipe.findOne({ name: new RegExp(name, "i") });
+    const recipe = await Recipe.findOne({ name: new RegExp(name, 'i') });
     if (recipe) {
       res.status(200).json(recipe);
     } else {
-      res.status(404).json({ message: "Recipe not found" });
+      res.status(404).json({ message: 'Recipe not found' });
     }
   } catch (err) {
     return next({
-      message: "error in getRecipeByName: " + err,
+      message: 'error in getRecipeByName: ' + err,
       log: err,
     });
   }
@@ -53,43 +53,73 @@ exports.getRecipeById = async (req, res, next) => {
     if (recipe) {
       res.status(200).json(recipe);
     } else {
-      res.status(404).json({ message: "Recipe not found" });
+      res.status(404).json({ message: 'Recipe not found' });
     }
   } catch (err) {
     return next({
-      message: "error in getRecipeById: " + err,
+      message: 'error in getRecipeById: ' + err,
       log: err,
     });
   }
-
 };
 
 exports.getAllRecipeNamesAndIds = async (req, res, next) => {
   try {
-    const recipes = await Recipe.find({}).select("name _id");
+    const recipes = await Recipe.find({}).select('name _id');
     res.status(200).json(recipes);
   } catch (err) {
     return next({
-      message: "error in getAllRecipeNamesAndIds: " + err,
+      message: 'error in getAllRecipeNamesAndIds: ' + err,
       log: err,
     });
   }
 };
 
 exports.getRecipesWithPagination = async (req, res, next) => {
-  const { page = 1 } = req.query; 
+  const { page = 1 } = req.query;
   const pageNumber = parseInt(page);
-  
+
+  try {
+    const totalItems = await Recipe.countDocuments({});
+    const totalPages = Math.ceil(totalItems / 9);
+
+    if (pageNumber > totalPages) {
+      return res.status(404).json({ message: 'Page not found' });
+    }
+
+    const recipes = await Recipe.find({})
+      .select('name picture')
+      .skip((pageNumber - 1) * 9)
+      .limit(9);
+
+    res.status(200).json({
+      page: pageNumber,
+      totalPages,
+      totalItems,
+      recipes,
+    });
+  } catch (err) {
+    return next({
+      message: 'error in getRecipesWithPagination: ' + err,
+      log: err,
+    });
+  }
+};
+
+exports.getRecipesWithPaginationId = async (req, res, next) => {
+  const { id = 1 } = req.params;
+  const pageNumber = parseInt(id);
+
   try {
     const totalItems = await Recipe.countDocuments({});
     const totalPages = Math.ceil(totalItems / 10);
 
     if (pageNumber > totalPages) {
-      return res.status(404).json({ message: "Page not found" });
+      return res.status(404).json({ message: 'Page not found' });
     }
 
     const recipes = await Recipe.find({})
-      .select("name picture")
+      .select('name picture')
       .skip((pageNumber - 1) * 10)
       .limit(10);
 
@@ -101,38 +131,7 @@ exports.getRecipesWithPagination = async (req, res, next) => {
     });
   } catch (err) {
     return next({
-      message: "error in getRecipesWithPagination: " + err,
-      log: err,
-    });
-  }
-};
-
-exports.getRecipesWithPaginationId = async (req, res, next) => {
-  const { id = 1 } = req.params; 
-  const pageNumber = parseInt(id);
-  
-  try {
-    const totalItems = await Recipe.countDocuments({});
-    const totalPages = Math.ceil(totalItems / 10);
-
-    if (pageNumber > totalPages) {
-      return res.status(404).json({ message: "Page not found" });
-    }
-
-    const recipes = await Recipe.find({})
-      .select("name picture")
-      .skip((pageNumber - 1) *10)
-      .limit(10);
-
-    res.status(200).json({
-      page: pageNumber,
-      totalPages,
-      totalItems,
-      recipes,
-    });
-  } catch (err) {
-    return next({
-      message: "error in getRecipesWithPagination: " + err,
+      message: 'error in getRecipesWithPagination: ' + err,
       log: err,
     });
   }
