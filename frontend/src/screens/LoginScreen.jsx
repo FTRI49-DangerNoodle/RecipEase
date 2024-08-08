@@ -84,7 +84,9 @@ function LoginScreen() {
           {`Don't have an account?`}
         </Typography>
 
-        <Link variant="subtitle2">Get started</Link>
+        <Link href="/register" variant="subtitle2">
+          Get started
+        </Link>
       </Stack>
     </Stack>
   );

@@ -1,15 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import {
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  Container,
-  Button,
-  Pagination,
-  Stack,
-} from '@mui/material';
+import { List, ListItem, ListItemText, Typography, Container, Button, Pagination, Stack } from '@mui/material';
 
 const GalleryScreen = () => {
   const [dishes, setDishes] = useState([]);
@@ -54,7 +45,7 @@ const GalleryScreen = () => {
         padding: '0',
       }}
     >
-      <Typography variant='h4' sx={{ margin: '15px', marginTop: '35px' }}>
+      <Typography variant="h4" sx={{ marginTop: '25px' }}>
         Welcome to RecipEase!
       </Typography>
       <List
@@ -82,12 +73,8 @@ const GalleryScreen = () => {
               button
               onClick={() => navigate(`/recipe/${recipe._id}`)}
             >
-              <img
-                src={recipe.picture}
-                alt={recipe.name}
-                style={{ width: '17rem', border: '2px solid black' }}
-              />
-              <ListItemText primary={recipe.name} component='h5' />
+              <img src={recipe.picture} alt={recipe.name} style={{ width: '17rem', border: '2px solid black' }} />
+              <ListItemText primary={recipe.name} component="h5" />
             </ListItem>
           );
         })}
@@ -95,12 +82,12 @@ const GalleryScreen = () => {
       <Stack spacing={2}>
         <Pagination
           count={34}
-          color='primary'
+          color="primary"
           onChange={handleNavigation}
           page={currentPage}
           showFirstButton
           showLastButton
-          size='large'
+          size="large"
         />
       </Stack>
     </Container>
