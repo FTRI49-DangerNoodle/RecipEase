@@ -86,7 +86,9 @@ function RegisterScreen() {
           Already have an account?
         </Typography>
 
-        <Link variant="subtitle2">Sign in</Link>
+        <Link href="/login" variant="subtitle2">
+          Sign in
+        </Link>
       </Stack>
     </Stack>
   );
