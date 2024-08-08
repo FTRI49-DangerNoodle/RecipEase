@@ -12,7 +12,11 @@ import Button from '@mui/material/Button';
 import { Link } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Menu, MenuItem, Slide, useScrollTrigger } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectUser, logoutUser } from '../slices/authSlice.js';
+import { useDispatch } from 'react-redux';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -59,6 +63,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function SearchAppBar() {
   // state for component anchor for AppBar drop-down menu
   const [anchorEl, setAnchorEl] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userInfo = useSelector(selectUser);
 
   // function to handle menu selection from AppBar drop-down menu
   const handleMenu = (event) => {
@@ -68,6 +75,14 @@ export default function SearchAppBar() {
   // function to close menu after selection from AppBar drop-down menu
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLoginLogoff = (event) => {
+    if (userInfo) {
+      dispatch(logoutUser(null));
+    } else {
+      navigate('/');
+    }
   };
 
   // trigger for Slide tags in AppBar to make bar disappear when scrolling down
@@ -83,14 +98,8 @@ export default function SearchAppBar() {
     },
   });
 
-  // state for search function
-  // const [searchTerm, setSearchTerm] = useState(null);
-
-  // state for login button on AppBar
-  const [loggedIn, setLoggedIn] = useState(null);
-
   // ternary label for login button label
-  const loginButton = loggedIn ? 'Logout' : 'Login';
+  const loginButton = userInfo ? 'Logout' : 'Login';
 
   // function to handle state as input is received from search bar on the AppBar
   // const handleState = (input) => {
@@ -152,7 +161,7 @@ export default function SearchAppBar() {
                     // onChange={(e) => handleState(e)}
                   />
                 </Search>
-                <Button href="/login" color="inherit">
+                <Button href="/login" color="inherit" onClick={handleLoginLogoff}>
                   {loginButton}
                 </Button>
               </Toolbar>
