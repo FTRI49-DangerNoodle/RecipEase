@@ -59,56 +59,62 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+let bool = false;
 export default function SearchAppBar() {
   // state for component anchor for AppBar drop-down menu
   const [anchorEl, setAnchorEl] = useState(null);
   // state for search term
   const [searchTerm, setSearchTerm] = useState('');
+
   // state to populate options for Autcomplete searchbox in AppBar
   const [options, setOptions] = useState([]);
+  const optionArr = [];
 
+  // state to populate cache for containing all recipes data from fetch
   const [recipeCache, setRecipeCache] = useState([]);
+  const recipeCacheArr = [];
 
   // function to populate options array with recipes for Autocomplete in AppBar search
   const fetchRecipes = async () => {
-    const fetchData = await fetch(
-      'http://www.localhost:5000/api/recipes/names-ids',
-      {
-        mode: 'no-cors',
-      }
-    );
-    const fetchedRecipes = await fetchData.json();
-    console.log('fetch', fetchedRecipes);
-    fetchedRecipes.map((arr, idx) => {
-      setOptions([...options, arr.name]);
-      setRecipeCache([...recipeCache, arr]);
+    const fetchData = await fetch('api/recipes/names-ids', {
+      mode: 'no-cors',
     });
-    console.log('opt', options);
-    console.log('rc', recipeCache);
+    const fetchedRecipes = await fetchData.json();
+    fetchedRecipes.map((arr, idx) => {
+      // setOptions(options.push(arr.name));
+      recipeCacheArr.push(arr);
+      optionArr.push(arr.name);
+      // recipeCacheArr.push(arr);
+    });
+    setOptions(optionArr);
+    setRecipeCache(recipeCacheArr);
+  };
+  // console.log(options);
+
+  const checkCache = () => {
+    if (bool === false) {
+      bool = true;
+      fetchRecipes();
+    }
   };
 
-  // Invoke fetch function to populate recipes on initial page render
-  fetchRecipes();
-
-  // test search options array
-  // const allOptions = [
-  //   '66b3d41d81883b581167fc6c',
-  //   '66b3d41d81883b581167fc6d',
-  //   '66b3d41d81883b581167fc6e',
-  //   '66b3d41d81883b581167fc6f',
-  // ];
+  useEffect(() => checkCache);
 
   // useNavigate function to route search request to paginated data for chosen recipe
   const navigate = useNavigate();
   // function to handle search logic after input submission
   const handleSubmit = async (recipe) => {
-    navigate(`api/recipes/${recipe.id}`);
+    console.log(recipeCache);
+    const recipeData = await recipeCache.find(recipe.name);
+    console.log('data', recipeData);
+    let recipeId = recipeData.id;
+    navigate(`api/recipes/${recipeId}`);
   };
 
   // update state in real-time based on search box input
-  useEffect(() => {
-    if (searchTerm) console.log(searchTerm);
-  }, [searchTerm]);
+  // useEffect(() => {
+  //   if (searchTerm) console.log(searchTerm);
+  // }, [searchTerm]);
 
   // function to handle menu selection from AppBar drop-down menu
   const handleMenu = (event) => {
@@ -146,7 +152,6 @@ export default function SearchAppBar() {
   // const handleState = (input) => {
   //   setSearchTerm(input);
   // };
-
   return (
     <div className="appbar-outer-container">
       <ThemeProvider theme={theme}>
@@ -172,25 +177,41 @@ export default function SearchAppBar() {
                 >
                   RecipEase
                 </Typography>
-                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                  <Link href="/" style={{ color: 'white', textDiscoloration: 'none' }}>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  <Link
+                    href="/"
+                    style={{ color: 'white', textDiscoloration: 'none' }}
+                  >
                     <MenuItem onClick={handleClose}>Home</MenuItem>
                   </Link>
-                  <Link href="/past" style={{ color: 'white', textDiscoloration: 'none' }}>
-                    <MenuItem href="/past" onClick={handleClose}>
-                      Past Recipes
-                    </MenuItem>
+                  <Link
+                    href="/past"
+                    style={{ color: 'white', textDiscoloration: 'none' }}
+                  >
+                    <MenuItem onClick={handleClose}>Past Recipes</MenuItem>
                   </Link>
-                  <Link href="/favorite" style={{ color: 'white', textDiscoloration: 'none' }}>
-                    <MenuItem href="/favorite" onClick={handleClose}>
-                      Favorite Recipes
-                    </MenuItem>
+                  <Link
+                    href="/favorite"
+                    style={{ color: 'white', textDiscoloration: 'none' }}
+                  >
+                    <MenuItem onClick={handleClose}>Favorite Recipes</MenuItem>
                   </Link>
-                  <Link href="/list" style={{ color: 'white', textDiscoloration: 'none' }}>
-                    <MenuItem href="/list" onClick={handleClose}>
-                      List
-                    </MenuItem>
+                  <Link
+                    href="/api/recipes/all"
+                    style={{ color: 'white', textDiscoloration: 'none' }}
+                  >
+                    <MenuItem onClick={handleClose}>All Recipes</MenuItem>
                   </Link>
+                  {/* <Link
+                    href="/api/recipes/all"
+                    style={{ color: 'white', textDiscoloration: 'none' }}
+                  >
+                    <MenuItem onClick={handleClose}>List</MenuItem>
+                  </Link> */}
                 </Menu>
                 <SearchIcon />
                 <Autocomplete
@@ -199,7 +220,7 @@ export default function SearchAppBar() {
                   onInputChange={(event, newInputValue) => {
                     setSearchTerm(newInputValue);
                   }}
-                  onSubmit={() => handleSubmit(searchTerm)}
+                  onSubmit={handleSubmit(searchTerm)}
                   options={options}
                   disablePortal
                   id="recipe-search"
