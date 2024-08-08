@@ -146,22 +146,10 @@ export default function SearchAppBar() {
                     <MenuItem onClick={handleClose}>Home</MenuItem>
                   </Link>
                   <Link
-                    href="/past"
-                    style={{ color: 'white', textDiscoloration: 'none' }}
-                  >
-                    <MenuItem onClick={handleClose}>Past Recipes</MenuItem>
-                  </Link>
-                  <Link
                     href="/favorite"
                     style={{ color: 'white', textDiscoloration: 'none' }}
                   >
                     <MenuItem onClick={handleClose}>Favorite Recipes</MenuItem>
-                  </Link>
-                  <Link
-                    href="/api/recipes/all"
-                    style={{ color: 'white', textDiscoloration: 'none' }}
-                  >
-                    <MenuItem onClick={handleClose}>All Recipes</MenuItem>
                   </Link>
                 </Menu>
                 <SearchIcon />
