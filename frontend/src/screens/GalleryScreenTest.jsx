@@ -8,29 +8,30 @@ import {
   Pagination,
 } from '@mui/material';
 
-import recipes from ('../assets/data/recipes'); // Ensure this path correctly points to your recipes data file
+import recipes from '../assets/data/recipes'; //GalleryScreenTest is for this static array only
 
 const GalleryScreen = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const recipesPerPage = 10;
+  const dishesPerPage = 2;
 
-  const indexOfLastRecipe = currentPage * recipesPerPage;
-  const indexOfFirstRecipe = indexOfLastRecipe - recipesPerPage;
-  const currentRecipes = recipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
+  const lastDishindex = currentPage * dishesPerPage; //index of last dish to dispaly
+  const firstDishindex = lastDishindex - dishesPerPage; //index of first dish to dsipaly
+  const pageOfDishes = recipes.slice(firstDishindex, lastDishindex);
 
-  const totalPages = Math.ceil(recipes.length / recipesPerPage);
+  const totalPages = Math.ceil(recipes.length / dishesPerPage); //total pages needed, rounded up
 
   const paginate = (event, value) => {
+    //changes page number
     setCurrentPage(value);
   };
 
   return (
-    <Container maxWidth='sm'>
+    <Container>
       <Typography variant='h4'>Dish Gallery</Typography>
       <List>
-        {currentRecipes.map((recipe) => (
-          <ListItem key={recipe._id} divider>
-            <ListItemText primary={recipe.name} />
+        {pageOfDishes.map((recipe) => (
+          <ListItem key={recipe._id}>
+            <ListItemText primary={recipe.picutre} />
           </ListItem>
         ))}
       </List>
@@ -38,7 +39,7 @@ const GalleryScreen = () => {
         count={totalPages}
         page={currentPage}
         onChange={paginate}
-        color='primary'
+        color='primary' //blue
         showFirstButton
         showLastButton
       />

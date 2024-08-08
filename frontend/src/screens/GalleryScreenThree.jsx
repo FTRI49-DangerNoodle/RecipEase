@@ -1,65 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import {
   List,
   ListItem,
   ListItemText,
   Typography,
   Container,
-  CircularProgress,
   Button,
 } from '@mui/material';
 
 const GalleryScreen = () => {
-  const { pageNumber = 1 } = useParams(); // Automatically convert string to number where needed
-  const navigate = useNavigate();
-  const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [dishes, setDishes] = useState([]);
+  //   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    const fetchRecipes = async () => {
-      setLoading(true);
+    const fetchdishes = async () => {
       try {
         const response = await fetch(
-          `http://example.com/api/recipes?page=${pageNumber}`
+          `http://localhost3000.com/api/recipes/${currentPage}`
         );
         const data = await response.json();
-        setRecipes(data.recipes); // Assuming the response contains an array of recipes
+        setDishes(data.dishes);
       } catch (error) {
         console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchRecipes();
-  }, [pageNumber]);
+    fetchdishes();
+  }, [currentPage]);
 
   const handleNavigation = (newPage) => {
-    navigate(`/gallery/${newPage}`);
+    setCurrentPage(`/gallery/${newPage}`);
   };
 
   return (
     <Container>
-      <Typography variant='h4'>Recipe Gallery</Typography>
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <List>
-          {recipes.map((recipe) => (
-            <ListItem key={recipe._id}>
-              <ListItemText primary={recipe.name} />
-            </ListItem>
-          ))}
-        </List>
-      )}
+      <Typography variant='h4'>Recipe Gallery</Typography>(
+      <List>
+        {dishes.map((recipe) => (
+          <ListItem key={recipe._id}>
+            <ListItemText primary={recipe.name} />
+          </ListItem>
+        ))}
+      </List>
+      )
       <Button
-        onClick={() => handleNavigation(Math.max(1, pageNumber - 1))}
-        disabled={pageNumber <= 1}
+        onClick={() => handleNavigation(Math.max(1, currentPage - 1))}
+        disabled={currentPage <= 1}
       >
         Previous
       </Button>
-      <Button onClick={() => handleNavigation(pageNumber + 1)}>Next</Button>
+      <Button onClick={() => handleNavigation(currentPage + 1)}>Next</Button>
     </Container>
   );
 };

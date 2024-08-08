@@ -27,7 +27,7 @@ function GalleryScreen() {
         {pageNumber > 1 && (
           <Link to={`/page/${parseInt(pageNumber) - 1}`}>Previous</Link>
         )}
-        {currentPageData.length === itemsPerPage && ( // Only show 'Next' if there are enough items to paginate
+        {currentPageData.length === itemsPerPage && (
           <Link to={`/page/${parseInt(pageNumber) + 1}`}>Next</Link>
         )}
       </div>

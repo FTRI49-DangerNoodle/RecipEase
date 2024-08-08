@@ -16,6 +16,8 @@ import LoginScreen from './screens/LoginScreen.jsx';
 import RegisterScreen from './screens/RegisterScreen.jsx';
 import GalleryScreen from './screens/GalleryScreen.jsx';
 import GalleryScreenTest from './screens/GalleryScreenTest.jsx';
+// import GalleryScreenTwo from './screens/GalleryScreenTwo.jsx';
+import GalleryScreenThree from './screens/GalleryScreenThree.jsx';
 import RecipeScreen from './screens/RecipeScreen.jsx';
 import FavoritesScreen from './screens/FavoritesScreen.jsx';
 
@@ -31,6 +33,8 @@ const router = createBrowserRouter(
       <Route path='/favorite' element={<FavoritesScreen />} />
       <Route path='/gallery' element={<GalleryScreen />} />
       <Route path='/gallerytest' element={<GalleryScreenTest />} />
+      {/* <Route path='/gallerytwo' element={<GalleryScreenTwo />} /> */}
+      <Route path='/gallerythree' element={<GalleryScreenThree />} />
       <Route path='' element={<PrivateRoute />}></Route>
     </Route>
   )
